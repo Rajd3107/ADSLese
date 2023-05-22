@@ -30,8 +30,11 @@ MySQL  localhost:3310 ssl  JS > cluster.status();
  MySQL  localhost:3310 ssl  SQL > create database Quiz;
 
  MySQL  localhost:3310 ssl  SQL > use quiz;
+ 
+  MySQL  localhost:3340 ssl  quiz  SQL > create table books(id int primary key, name varchar(20));
 
  MySQL  localhost:3310 ssl  quiz  SQL > show tables;
+ 
 
  MySQL  localhost:3310 ssl  quiz  SQL > insert into user values(2, 'Mahesh', 'mahesh@gmail.com');
 
