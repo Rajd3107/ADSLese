@@ -33,6 +33,8 @@ MySQL  localhost:3310 ssl  JS > cluster.status();
 
  MySQL  localhost:3310 ssl  quiz  SQL > show tables;
 
+ MySQL  localhost:3310 ssl  quiz  SQL > create table user(id int primary key,name varchar(30),email varchar(50));
+
  MySQL  localhost:3310 ssl  quiz  SQL > insert into user values(2, 'Mahesh', 'mahesh@gmail.com');
 
  MySQL  localhost:3310 ssl  quiz  SQL > select * from user;
