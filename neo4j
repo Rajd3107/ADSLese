@@ -1,0 +1,76 @@
+from neo4j import GraphDatabase
+class Neo4jDB:
+def __init__(self, uri, user, password):
+self._driver = GraphDatabase.driver(uri, auth=(user, password))
+def close(self):
+self._driver.close()
+def get_papers_by_subject(self, subject):
+with self._driver.session() as session:
+result = session.run("MATCH (p:Paper) WHERE p.subject CONTAINS $subject RETURN p",
+subject=subject)
+return [record["p"] for record in result]
+def get_cited_by(self, paper_id):
+with self._driver.session() as session:
+result = session.run("MATCH (p:Paper {id: $paper_id})<-[:Cites]-(c) RETURN c",
+paper_id=paper_id)
+return [record["c"] for record in result]
+def get_classification(self, paper_id):
+with self._driver.session() as session:
+ans = []
+result = session.run("MATCH (p:Paper {id: $paper_id}) RETURN p",
+paper_id=paper_id)
+for record in result:
+for rec in record:
+ans.append(rec['id'])
+ans.append(rec['subject'])
+break
+break
+return ans
+def get_full_classification(self, paper_id):
+with self._driver.session() as session:
+result = session.run("MATCH path=(p:Paper {id: $paper_id})-[:IsA*]->(c) RETURN 
+c.name", paper_id=paper_id)
+return [record["c.name"] for record in result]
+
+class GUI:
+def __init__(self, db):
+self._db = db
+def run(self):
+while True:
+print("1. Get papers by subject")
+print("2. Get papers cited by a paper")
+print("3. Get classification of a paper")
+print("4. Get full classification of a paper")
+print("5. Exit")
+choice = input("Enter choice: ")
+if choice == "1":
+subject = input("Enter subject: ")
+papers = self._db.get_papers_by_subject(subject)
+for paper in papers:
+print(paper["id"], paper["subject"], paper["features"])
+elif choice == "2":
+paper_id = input("Enter paper ID: ")
+papers = self._db.get_cited_by(paper_id)
+for paper in papers:
+print(paper["id"], paper["subject"], paper["features"])
+elif choice == "3":
+paper_id = input("Enter paper ID: ")
+classifications = self._db.get_classification(paper_id)
+print("Answer: ",classifications)
+elif choice == "4":
+paper_id = input("Enter paper ID: ")
+full_classification = self._db.get_full_classification(paper_id)
+if full_classification:
+print(" / ".join(full_classification))
+else:
+print("No classification found for paper ID:", paper_id)
+elif choice == "5":
+self._db.close()
+break
+if __name__ == "__main__":
+uri = "bolt://localhost:7687"
+user = "neo4j"
+password = "#Balaji@123"
+db = Neo4jDB(uri, user, password)
+gui = GUI(db)
+gui.run()
